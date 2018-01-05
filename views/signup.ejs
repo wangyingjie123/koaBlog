@@ -1,0 +1,84 @@
+<% include header %>
+<div class="container">
+    <div class="row">
+        <form class="col l6 s12 m8 card-panel card-form" method="post" id="form">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">account_circle</i>
+                    <input id="icon_prefix" type="text" class="validate" name="name">
+                    <label for="icon_prefix">用户名</label>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">vpn_key</i>
+                    <input id="icon_telephone" type="password" class="validate" name="password">
+                    <label for="icon_telephone">密码</label>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">repeat_one</i>
+                    <input id="icon_telephone2" type="password" class="validate" name="repeatpass">
+                    <label for="icon_telephone2">重复密码</label>
+                </div>
+                <div class="waves-effect waves-light btn right" id="submit">注册</div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $('#submit').click(function(){
+        let passward1=$('#icon_telephone').val(),passward2=$('#icon_telephone2').val();
+        if(!$('#icon_prefix').val()){
+            Materialize.toast('用户名不能为空', 4000)
+            return false
+        }
+        if(!passward1){
+            Materialize.toast('密码不能为空', 4000)
+            return false
+        }
+        if(!passward2){
+            Materialize.toast('请再次输入密码', 4000)
+            return false
+        }
+        if(passward1!==passward2){
+            Materialize.toast('两次输入密码不一致', 4000)
+            return false
+        }
+        let that=$(this);
+        if(that.hasClass('disabled')){
+            return false
+        }
+        that.addClass('disabled');
+        submutAjax(that);
+    })
+    let submutAjax=(that)=>{
+        $.ajax({
+            url: "/signup",
+            data: $('#form').serialize(),
+            type: "POST",
+            cache: false,
+            dataType: 'json',
+            success: function (msg) {
+                if (msg.data === 1) {
+                    Materialize.toast('用户名存在', 4000)
+                    $('input').val('');
+                    that.removeClass('disabled');
+                }
+                else if (msg.data === 2){
+                    Materialize.toast('请输入重复的密码', 4000);
+                    that.removeClass('disabled');
+                }
+                else if(msg.data === 3){
+                    Materialize.toast('注册成功', 4000)
+                    setTimeout(()=>{
+                        that.removeClass('disabled');
+                        window.location.href="/signin"
+                    },1000)
+                }
+            },
+            error: function () {
+                alert('异常');
+                that.removeClass('disabled');
+            }
+        })
+    }
+</script>
+<% include footer %>

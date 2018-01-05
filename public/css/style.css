@@ -1,0 +1,47 @@
+.padding-15{
+    padding: 0 0.75rem;
+}
+.dis-bolck{
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+}
+.span-defalut{
+    color: #fff;
+}
+.row .card-form{
+    margin: 30px auto 0;
+    float: none;
+    padding: 20px 20px 1px;
+}
+.waves-effect.right{
+    margin-right: 15px;
+}
+.mar-letf_10{
+    margin-left: 10px;
+}
+.delete_comment{
+    color: inherit;
+    display: inline-block;
+    margin-left: 1.5rem;
+}
+.collection{
+    margin: 0;
+}
+/*移动端按钮位置*/
+.fixed-action-btn{
+    bottom: 85%;
+}
+.fixed-action-btn.horizontal ul li{
+    margin:0 10px 0 0;
+}
+.fixed-action-btn.horizontal ul{
+    justify-content: flex-end;
+    width: calc(100vw - 100px);
+}
+/*分页*/
+.pages{
+    display: flex;
+    justify-content: center;
+}

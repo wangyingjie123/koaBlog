@@ -1,0 +1,177 @@
+<% include header %>
+<div class="container">
+    <div class="row">
+        <div class="col l12 m12 s12">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text clearfix">
+                    <span class="card-title"><%= posts[0]['title'] %></span>
+                    <p><%= posts[0]['content'] %></p>
+                    <div style="overflow: hidden;">
+                        <p class="right valign-wrapper">
+                            <i class="material-icons">person_pin</i>
+                            <span>作者：</span>
+                            <a href="/posts?author=<%= posts[0]['name'] %>"><%= posts[0]['name'] %></a>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <% if(session && session.user===  posts[0]['name']  ){ %>
+                    <a href="<%= posts[0]['id'] %>/edit">编辑</a>
+                    <a class="delete_post" id="delete" href="javascript:;">删除</a>
+                    <% } %>
+                </div>
+                <div class="card-content" style="padding-top: 0;">
+                     <span class="card-title white-text">
+                        <i class="material-icons">comment</i>
+                        评论区
+                    </span>
+                    <%if(comments.length>0){%>
+                    <ul class="collection">
+                        <% comments.forEach(function(res){ %>
+                        <li class="collection-item avatar">
+                            <i class="material-icons circle">perm_identity</i>
+                            <span class="title"><%= res['content'] %></span>
+                            <p class="valign-wrapper">
+                                <span>By: <%= res['name'] %></span>
+                                <% if(session && session.user ===  res['name']  ){ %>
+                                <a class="delete_comment" href="javascript:;" data-id="<%= res['id'] %>">
+                                    <i class="material-icons">delete</i>
+                                </a>
+                                <% } %>
+                            </p>
+                            <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                        </li>
+                        <% })%>
+                    </ul>
+                    <%}else{ %>
+                    <p class="white-text">暂无评论哦！</p>
+                    <%}%>
+                </div>
+            </div>
+        </div>
+        <% if(session.user){ %>
+        <!--评论-->
+        <form class="col l12 m12 s12"  method="post" action="/<%= posts[0]['id'] %>" id="commentForm">
+            <div class="row">
+                <div class="input-field col l12 m12 s12">
+                    <i class="material-icons prefix">description</i>
+                    <textarea id="textarea1" class="materialize-textarea" length="100" name="content"></textarea>
+                    <label for="textarea1">发表评论</label>
+                </div>
+            </div>
+            <div class="clearfix">
+                <a class="waves-effect waves-light btn right" id="submit"><i class="material-icons right">send</i>提交评论</a>
+            </div>
+        </form>
+        <% } %>
+    </div>
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h4>确定要删除吗?</h4>
+        <p class="valign-wrapper">
+            <i class="material-icons">info_outline</i>
+            <span class="mar-letf_10">
+                确定后，本条博客将会从列表中删除
+            </span>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:;" class="waves-effect waves-light btn" id="deleteSure">同意</a>
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">删除</a>
+    </div>
+</div>
+<!--删除文章-->
+<script>
+    $(document).ready(function(){
+        // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal();
+    });
+    $('#delete').click(()=>{
+        $('#modal1').modal('open');
+    })
+    $('#deleteSure').on('click',function(){
+        deleteSub();
+    })
+    let deleteSub=()=>{
+        $.ajax({
+            url:"<%= posts[0]['id'] %>/remove",
+            type:'GET',
+            cache: false,
+            success:function(msg){
+                if (msg.data===1) {
+                    $('#modal1').modal('close');
+                    Materialize.toast('删除文章成功', 4000)
+                    setTimeout(()=>{
+                        window.location.href="/posts"
+                    },1000)
+                }else if(msg.data===2){
+                    Materialize.toast('删除文章失败', 4000)
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },1000)
+                }
+            }
+        })
+    }
+    $('.collection').on('click','li .valign-wrapper .delete_comment',function(){
+        let commentId=$(this).attr('data-id');
+        let that=$(this);
+        $.ajax({
+            url:"<%= posts[0]['id'] %>/comment/"+commentId+"/remove",
+            type:'GET',
+            cache: false,
+            success:function(msg){
+                if (msg.data===1) {
+                    Materialize.toast('删除成功', 4000)
+                    that.closest('li.collection-item').remove();
+                }else if(msg.data===2){
+                    Materialize.toast('删除失败', 4000)
+                }
+            },
+            error:function(){
+                alert('异常')
+            }
+        })
+    })
+</script>
+<!--评论-->
+<script>
+    $('#submit').on('click',function(){
+        let that=$(this);
+        if(!$('#textarea1').val()){
+            Materialize.toast('亲，请你写几句话么，几个字也算', 4000);
+            return false
+        }
+        if(that.hasClass('disabled')){
+            return false
+        }
+        that.addClass('disabled');
+        subComments(that);
+    })
+    let subComments=function(that){
+        $.ajax({
+            url: '/'+document.URL.slice(document.URL.lastIndexOf('/')+1),
+            data:$('#commentForm').serialize(),
+            type: "POST",
+            cache: false,
+            dataType: 'json',
+            success: function (msg) {
+                if (msg) {
+                    Materialize.toast('发表留言成功', 4000)
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },1000)
+                }else{
+                    that.removeClass('disabled');
+                    Materialize.toast('发表留言失败', 4000)
+                }
+            },
+            error: function () {
+                alert('异常');
+            }
+        })
+    }
+</script>
+<% include footer %>

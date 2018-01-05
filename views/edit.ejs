@@ -1,0 +1,54 @@
+<% include header %>
+<div class="container">
+    <div class="row">
+        <form class="col l8 m10 s12 card-panel card-form" method="post" id="form">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">textsms</i>
+                    <input id="input_text" type="text" length="40" name="title" value="<%= posts[0]['title'] %>">
+                    <label for="input_text">标题</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">description</i>
+                    <textarea id="textarea1" class="materialize-textarea" length="100" name="content"><%= posts[0]['content'] %></textarea>
+                    <label for="textarea1">内容</label>
+                </div>
+            </div>
+            <div style="overflow: hidden">
+                <div id="submit" class="waves-effect waves-light btn right" style="margin-bottom: 20px;">修改</div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    let submitAjax=(that)=>{
+        $.ajax({
+            url: document.URL,
+            data: $('#form').serialize(),
+            type: "POST",
+            cache: false,
+            dataType: 'json',
+            success: function (msg) {
+                if (msg) {
+                    Materialize.toast('修改成功', 4000);
+                    setTimeout(()=>{
+                        that.removeClass('disabled');
+                        window.location.href="/posts"
+                    },1000)
+                }else{
+                    Materialize.toast('修改失败', 4000);
+                    that.removeClass('disabled');
+                }
+            },
+            error: function () {
+                Materialize.toast('系统异常', 4000);
+                that.removeClass('disabled');
+
+            }
+        })
+    }
+</script>
+<script src="/js/global.js"></script>
+<% include footer %>

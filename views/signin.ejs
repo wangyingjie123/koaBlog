@@ -1,0 +1,61 @@
+<% include header %>
+<div class="container">
+    <div class="row">
+        <form class="col l6 s12 m8 card-panel card-form" method="post" id="form">
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">account_circle</i>
+                    <input id="icon_prefix" type="text" class="validate" name="name">
+                    <label for="icon_prefix">用户名</label>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">vpn_key</i>
+                    <input id="icon_telephone" type="password" class="validate" name="password">
+                    <label for="icon_telephone">密码</label>
+                </div>
+                <div class="waves-effect waves-light btn right" id="submit">登录</div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $('#submit').on('click',function(){
+       if(!$('#icon_prefix').val()||!$('#icon_telephone').val()){
+           Materialize.toast('用户名或密码不能为空', 4000)
+           return false
+       }
+       let that=$(this);
+       if(that.hasClass('disabled')){
+           return false
+       }
+        that.addClass('disabled');
+        submitAjax(that);
+    })
+    let submitAjax=(that)=>{
+        $.ajax({
+            url: "/signin",
+            data: $('#form').serialize(),
+            type: "POST",
+            cache: false,
+            dataType: 'json',
+            success: function (msg) {
+                if (!msg) {
+                    Materialize.toast('用户名或密码错误', 4000);
+                    $('input').val('');
+                    that.removeClass('disabled');
+                }else{
+                    Materialize.toast('登录成功', 4000)
+                    setTimeout(()=>{
+                        that.removeClass('disabled');
+                        window.location.href="/posts"
+                    },1000)
+                }
+            },
+            error: function () {
+                Materialize.toast('系统异常',4000);
+                that.removeClass('disabled');
+            }
+        })
+    }
+</script>
+<% include footer %>
