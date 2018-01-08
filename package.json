@@ -7,6 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
+    "dev": "supervisor --harmony index",
     "start": "node index.js"
   },
   "author": "wangyingjie",
@@ -21,6 +22,7 @@
     "koa-static": "^4.0.2",
     "koa-views": "^6.1.3",
     "koa2-cors": "^2.0.5",
+    "markdown-it": "^8.4.0",
     "md5": "^2.2.1",
     "moment": "^2.20.1",
     "mysql": "^2.15.0"

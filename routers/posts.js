@@ -3,6 +3,8 @@ let router=require('koa-router')();
 let userModel=require('../lib/mysql.js');
 // 时间中间件
 let moment=require('moment');
+const md = require('markdown-it')();
+
 // get '/'页面
 router.get('/',async (ctx,next)=>{
     ctx.redirect('/posts')
@@ -81,7 +83,7 @@ router.post('/create',async (ctx,next)=>{
     let time=moment().format('YYYY-MM-DD HH:mm');
     console.log([name,title,content,id,time]);
     // 这里我们向数据库插入用户名、标题、内容、发表文章用户的id、时间，成功返回true，失败为false
-    await userModel.insertPost([name,title,content,id,time])
+    await userModel.insertPost([name,title,md.render(content),id,time])
         .then(()=>{
             ctx.body='true'
         }).catch(()=>{
@@ -119,7 +121,7 @@ router.post('/:postId',async (ctx,next)=>{
     let content=ctx.request.body.content;
     let postId=ctx.params.postId;
     // 插入评论的用户名，内容和文章id
-    await userModel.insertComment([name,content,postId]);
+    await userModel.insertComment([name,md.render(content),postId]);
     // 先通过文章id查找，然后评论数+1
     await userModel.findDataById(postId)
         .then(result=>{
