@@ -26,7 +26,7 @@ npm install
 ```
 #6.运行项目
 ```
-supervisor --harmony index
+npm run dev
 ```
 #7.打开浏览器输入http://localhost:3001
 
