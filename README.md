@@ -28,7 +28,7 @@ npm install
 ```
 npm run dev
 ```
-# 7.打开浏览器输入http://localhost:3001
+## 7.打开浏览器输入http://localhost:3001
 
 ## 项目部分截图
 
